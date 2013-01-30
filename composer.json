@@ -1,0 +1,29 @@
+{
+    "name": "walterra/j4p5-bundle",
+    "type": "symfony-bundle",
+    "description": "JavaScript for PHP5 - 'fork' from http://j4p5.sourceforge.net/ ",
+    "keywords": ["javascript", "php", "parser", "interpreter"],
+    "homepage": "http://github.com/walterra/J4p5Bundle",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Henri T.",
+            "email": "metal_hurlant@users.sourceforge.net"
+        },
+        {
+            "name": "Walter Rafelsberger",
+            "email": "walter@rafelsberger.at"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2"
+    },
+    "require-dev": {
+        "symfony/framework-bundle": ">=2.1,<2.2-dev"
+    },
+    "autoload": {
+        "psr-0": { "Walterra\\J4p5Bundle": "" }
+    },
+    "minimum-stability": "dev",
+    "target-dir": "Walterra/J4p5Bundle"
+}

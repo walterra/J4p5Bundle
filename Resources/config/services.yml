@@ -1,0 +1,7 @@
+parameters:
+#    walterra_j4p5.example.class: Walterra\J4p5Bundle\Example
+
+services:
+#    walterra_j4p5.example:
+#        class: %walterra_j4p5.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]

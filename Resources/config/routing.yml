@@ -1,0 +1,3 @@
+walterra_j4p5_homepage:
+    pattern:  /hello/{name}
+    defaults: { _controller: WalterraJ4p5Bundle:Default:index }
