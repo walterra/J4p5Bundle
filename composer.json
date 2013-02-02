@@ -25,5 +25,5 @@
         "psr-0": { "Walterra\\J4p5Bundle": "" }
     },
     "minimum-stability": "dev",
-    "target-dir": ""
+    "target-dir": "Walterra/J4p5Bundle"
 }
