@@ -1,5 +1,9 @@
 <?php
 
+namespace Walterra\J4p5Bundle\j4p5;
+
+use Exception;
+
 /* misc subset */
 
 class Bug extends Exception {}
@@ -732,7 +736,7 @@ abstract class parser {
 class easy_parser extends parser {
 	function __construct($pda, $strategy = null) {
 		parent::__construct($pda);
-		$this->call = $this->action; //array();
+        $this->call = $this->action; //array();
 		$this->strategy = ($strategy ? $strategy : new default_parser_strategy());
 		/*
 		foreach($this->action as $k => $body) {
@@ -741,7 +745,8 @@ class easy_parser extends parser {
 		*/
 	}
 	function reduce($action, $tokens) {
-		return $this->call[$action]($tokens);
+        $call = $this->call[$action];
+        return jsly::$call($tokens);
 	}
 	function parse($symbol, $lex, $strategy = null) {
 		return parent::parse($symbol, $lex, $this->strategy);

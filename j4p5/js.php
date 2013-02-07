@@ -1,4 +1,10 @@
 <?php
+
+namespace Walterra\J4p5Bundle\j4p5;
+
+use Walterra\J4p5Bundle\j4p5\jsrt;
+use Walterra\J4p5Bundle\j4p5\jsc;
+
 /* 
   J4P5: EcmaScript interpreter for php
   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -49,6 +55,7 @@ class js {
     #-- we need a unique ID for this script. passing $id makes this faster, but whatever.
     if ($id==NULL) $id = md5($src);
     $path = JS_CACHE_DIR."/".$id.".php";
+    $jsClass = "js_".$id;
     if (!file_exists($path)) {
       #-- ok. we need to compile the darn thing.
       require_once(dirname(__FILE__)."/jsc.php");
@@ -57,17 +64,31 @@ class js {
       $t1 = microtime(1);
       $php = jsc::compile($src);
       $t2 = microtime(2);
-      #echo "Compilation done in ".($t2-$t1). " seconds<hr>";
-      file_put_contents($path, "<?php\n".$php."\n?>");
+      echo "Compilation done in ".($t2-$t1). " seconds<hr>";
+      file_put_contents($path, "<?php\n
+
+      use \Walterra\J4p5Bundle\j4p5\js;
+      use \Walterra\J4p5Bundle\j4p5\jsrt;
+      use \Walterra\J4p5Bundle\j4p5\jss;
+
+      class ".$jsClass." {
+        static public function run(){
+      
+      ".$php."\n
+      
+        }
+        }
+      ?>");
       #-- then we run it.
     }
     #echo highlight_linenum($path);
-    include $path;
+    require_once $path;
+    call_user_func(array($jsClass, "run")); 
   }
   
   #-- normally called by generated code. Your code doesn't need to call it.
   static function init() {
-    require_once(dirname(__FILE__)."/jsrt.php");
+    // require_once(dirname(__FILE__)."/jsrt.php");
     jsrt::start_once();
   }
 
@@ -104,8 +125,8 @@ class js {
       #-- odd, but php.net discourages the use of gettype, so watch me comply.
       switch(true) {
         case is_bool($php):    $v = new js_val(js_val::BOOLEAN, $php); break;
-        case is_string($php):  $v = js_str($php); break;
-        case is_numeric($php): $v = js_int($php); break;
+        case is_string($php):  $v = jss::js_str($php); break;
+        case is_numeric($php): $v = jss::js_int($php); break;
         case is_null($php):    $v = jsrt::$null;  break;
         case is_array($php):  /* we could do something smarter here. maybe later. */
         default:               $v = jsrt::$undefined; break;

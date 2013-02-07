@@ -1,6 +1,11 @@
 <?php
 
-require_once dirname(__FILE__)."/parse/parser.so.php";
+namespace Walterra\J4p5Bundle\j4p5;
+
+require_once(dirname(__FILE__)."/parse/parser.so.php");
+
+use Exception;
+use Walterra\J4p5Bundle\j4p5\jsly;
 
 /*
 known brokenness:
@@ -31,7 +36,7 @@ static function compile($codestr) {
   static $parser = NULL;
   if ($lex == NULL) {
     $t0 = microtime(1);
-    $path = dirname(__FILE__)."/js.ly.php";
+    /* $path = dirname(__FILE__)."/js.ly.php";
     if (file_exists($path)) {
       include $path;
     } else {
@@ -47,10 +52,11 @@ static function compile($codestr) {
         "// Do not waste your time editing it or reading it. Move along. Thank you.\n".
         "\n".$GLOBALS['func_def']."\$lexp = ".var_export($lexp,1).";\n\$dpa = ".var_export($dpa,1).";\n?>");
       }
-    }
+    } */
+
     $t1 = microtime(1);
-    $lex = new preg_scanner(0, $lexp);
-    $parser = new easy_parser($dpa);
+    $lex = new preg_scanner(0, jsly::$lexp);
+    $parser = new easy_parser(jsly::$dpa);
     $t2 = microtime(1);
     #echo "Table loading: ".($t1-$t0)." seconds<br>";
     #echo "Pre generation: ".($t2-$t1)." seconds<br>";
@@ -64,9 +70,10 @@ static function compile($codestr) {
   # convert into usable php code
   try {
     $php = $program->emit();
-  } catch (Exception $e) {
+  } catch (\Exception $e) {
     #-- Compilation error. should be pretty rare. usually the parser will barf long before this.
-    echo "Compilation Error: ".$e->value->msg."<hr>";
+    var_dump($e);
+    // echo "Compilation Error: ".$e->value->msg."<hr>";
   }
   return $php;
 }
@@ -395,7 +402,7 @@ class js_var extends js_construct {
     }
     return $o;
   }
-  function really_emit($arr) {
+  static public function really_emit($arr) {
     if (count($arr)==0) return '';
     $l = "'".implode("','",array_unique($arr))."'";
     return "jsrt::define_variables($l);\n";
@@ -425,6 +432,7 @@ class js_block extends js_construct {
   function emit($w=0) {
     $o = "{\n";
     foreach ($this->statements as $statement) {
+      echo $statement->emit(1)."\n\n";
       $o.= "  ".trim(str_replace("\n", "\n  ", $statement->emit(1)))."\n";
     }
     $o.= "}\n";
@@ -497,7 +505,7 @@ class js_for_in extends js_construct {
     } else {
       $v = $this->one->emit();
     }
-    $o.="  jsrt::expr_assign($v, js_str(\$$key));\n";
+    $o.="  jsrt::expr_assign($v, jss::js_str(\$$key));\n";
     $o.= "  ".trim(str_replace("\n", "\n  ", $this->statement->emit(1)))."\n";
     $o.="}";
     js_source::$nest--;
@@ -607,6 +615,7 @@ class js_case extends js_construct {
       $o = "  case (js_bool(jsrt::expr_strict_equal(\$".$this->e.",".$this->expr->emit(1)."))):\n";
     }
     foreach ($this->code as $code) {
+      echo $code->emit(1)."\n\n";
       $o .= "    ".trim(str_replace("\n", "\n    ", $code->emit(1)))."\n";
     }
     return $o;
@@ -852,7 +861,7 @@ class js_literal_string extends js_construct {
   return $out;
  }
   function emit($w=0) {
-    return "js_str(".var_export($this->str,1).")";
+    return "jss::js_str(".var_export($this->str,1).")";
   }
 }
 class js_accessor extends js_construct {

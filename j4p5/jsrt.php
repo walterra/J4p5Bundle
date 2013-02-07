@@ -1,4 +1,10 @@
 <?php
+
+namespace Walterra\J4p5Bundle\j4p5;
+
+use Exception;
+use Iterator;
+
 // javascript runtime.
 /* weird bugs I blame on the php engine:
  - exceptions coming from internal functions would crash apache until I change the way I call
@@ -1157,13 +1163,13 @@ class js_function extends js_object {
     $context = new js_context($that, $scope, $var);
     array_unshift(jsrt::$contexts, $context);
     $thrown = NULL;
-    //echo "function name=".serialize($this->phpname)." arguments = ".serialize($args)."<hr>";
+    // echo "function name=".serialize($this->phpname)." arguments = ".serialize($args)."<hr>";
     try {
       // gross hack to hide warnings triggered by exception throwing.
       // this way, we still get to see other kind of errors. unless they're warnings. sigh.
       // note: this call_user_func_array() is responsible for crashes if exceptions are thrown through it.
       //$saved = error_reporting(4093);
-      $v = call_user_func_array($this->phpname, $args);
+      $v = call_user_func_array("\Walterra\J4p5Bundle\j4p5\\".$this->phpname[0]."::".$this->phpname[1], $args);
       //error_reporting($saved);
     } catch (Exception $e) {
       $thrown = $e;
