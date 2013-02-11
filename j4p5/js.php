@@ -36,61 +36,59 @@ use Walterra\J4p5Bundle\j4p5\jsc;
 
 define("JS_CACHE_DIR", (getenv("TMP")?getenv("TMP"):"/tmp")."/es4php");
 define("JS_DEBUG", 1);
+
 function enum() {
-  static $index = 1;
-  foreach (func_get_args() as $c) {
-    define ($c, JS_DEBUG?$index++:$c);
-  }
+    static $index = 1;
+    foreach (func_get_args() as $c) {
+        define ($c, JS_DEBUG?$index++:$c);
+    }
 }
+
 enum("JS_INLINE", "JS_DIRECT");
 
 class js {
-
-  #-- auto-magic function that should work out of the box without being too inefficient.
-  static function run($src, $mode=JS_DIRECT, $id=NULL) {
-    #-- attempt to setup our cache directory
-    if (!file_exists(JS_CACHE_DIR)) {
-      mkdir(JS_CACHE_DIR, 0777, true);
-    }
-    #-- we need a unique ID for this script. passing $id makes this faster, but whatever.
-    if ($id==NULL) $id = md5($src);
-    $path = JS_CACHE_DIR."/".$id.".php";
-    $jsClass = "js_".$id;
-    if (!file_exists($path)) {
-      #-- ok. we need to compile the darn thing.
-      require_once(dirname(__FILE__)."/jsc.php");
-
-      if ($mode==JS_INLINE) $src = "?>".$src;
-      $t1 = microtime(1);
-      $php = jsc::compile($src);
-      $t2 = microtime(2);
-      echo "Compilation done in ".($t2-$t1). " seconds<hr>";
-      file_put_contents($path, "<?php\n
-
-      use \Walterra\J4p5Bundle\j4p5\js;
-      use \Walterra\J4p5Bundle\j4p5\jsrt;
-      use \Walterra\J4p5Bundle\j4p5\jss;
-
-      class ".$jsClass." {
-        static public function run(){
-      
-      ".$php."\n
-      
+    #-- auto-magic function that should work out of the box without being too inefficient.
+    static function run($src, $mode=JS_DIRECT, $id=NULL) {
+        #-- attempt to setup our cache directory
+        if (!file_exists(JS_CACHE_DIR)) {
+            mkdir(JS_CACHE_DIR, 0777, true);
         }
-        }
-      ?>");
-      #-- then we run it.
+        #-- we need a unique ID for this script. passing $id makes this faster, but whatever.
+        if ($id==NULL) $id = md5($src);
+        $path = JS_CACHE_DIR."/".$id.".php";
+        $jsClass = "js_".$id;
+        
+        if (!file_exists($path)) {
+          #-- ok. we need to compile the darn thing.
+            require_once(dirname(__FILE__)."/jsc.php");
+
+            if ($mode==JS_INLINE) $src = "?>".$src;
+            $t1 = microtime(1);
+            $php = jsc::compile($src);
+            $t2 = microtime(2);
+            echo "Compilation done in ".($t2-$t1). " seconds<hr>";
+            file_put_contents($path, "<?php\n
+use \Walterra\J4p5Bundle\j4p5\js;
+use \Walterra\J4p5Bundle\j4p5\jsrt;
+use \Walterra\J4p5Bundle\j4p5\jss;
+
+class ".$jsClass." {
+    static public function run(){
+        ".$php."\n
     }
-    #echo highlight_linenum($path);
-    require_once $path;
-    call_user_func(array($jsClass, "run")); 
-  }
-  
-  #-- normally called by generated code. Your code doesn't need to call it.
-  static function init() {
-    // require_once(dirname(__FILE__)."/jsrt.php");
-    jsrt::start_once();
-  }
+}
+?>");
+        }
+        #-- then we run it.
+        #echo highlight_linenum($path);
+        require_once $path;
+        call_user_func(array($jsClass, "run")); 
+    }
+
+    #-- normally called by generated code. Your code doesn't need to call it.
+    static function init() {
+        jsrt::start_once();
+    }
 
   #-- easy-to-use crud to define functions, variables and all that good stuff  
   /**
@@ -108,32 +106,32 @@ class js {
    *  - variables cannot contain arrays or objects. use the real jsrt:: API for that stuff.
    *
    */
-  static function define($objname, $funcarray, $vararray=null) {
-    #-- start by covering our basics
-    js::init();
-    #-- define the main object
-    $obj = new js_object();
-    jsrt::define_variable($objname, $obj);
-    #-- start linking our functions
-    jsrt::push_context($obj);
-    foreach ($funcarray as $js=>$php) {
-      jsrt::define_function($php, $js);
+    static function define($objname, $funcarray, $vararray=null) {
+        #-- start by covering our basics
+        js::init();
+        #-- define the main object
+        $obj = new js_object();
+        jsrt::define_variable($objname, $obj);
+        #-- start linking our functions
+        jsrt::push_context($obj);
+        foreach ($funcarray as $js=>$php) {
+            jsrt::define_function($php, $js);
+        }
+        jsrt::pop_context();
+        #-- put variables in place
+        foreach ((array)$vararray as $js=>$php) {
+            #-- odd, but php.net discourages the use of gettype, so watch me comply.
+            switch(true) {
+                case is_bool($php):    $v = new js_val(js_val::BOOLEAN, $php); break;
+                case is_string($php):  $v = jss::js_str($php); break;
+                case is_numeric($php): $v = jss::js_int($php); break;
+                case is_null($php):    $v = jsrt::$null;  break;
+                case is_array($php):  /* we could do something smarter here. maybe later. */
+                default:               $v = jsrt::$undefined; break;
+            }
+            $obj->put($js, $v);
+        }
     }
-    jsrt::pop_context();
-    #-- put variables in place
-    foreach ((array)$vararray as $js=>$php) {
-      #-- odd, but php.net discourages the use of gettype, so watch me comply.
-      switch(true) {
-        case is_bool($php):    $v = new js_val(js_val::BOOLEAN, $php); break;
-        case is_string($php):  $v = jss::js_str($php); break;
-        case is_numeric($php): $v = jss::js_int($php); break;
-        case is_null($php):    $v = jsrt::$null;  break;
-        case is_array($php):  /* we could do something smarter here. maybe later. */
-        default:               $v = jsrt::$undefined; break;
-      }
-      $obj->put($js, $v);
-    }
-  }
 }
 
 /**
@@ -147,13 +145,13 @@ function highlight_linenum($path)
     $end   = '</span>';
     $i = 1;
     $text = '';
- 
+  
     // Loop
     foreach ($data as $line) {
         $text .= $start . $i . ' ' . $end .
-            str_replace("\n", '', $line) . "\n";
+        str_replace("\n", '', $line) . "\n";
         ++$i;
     }
- 
+
     return "<pre style='border:1px dotted #aaa;'>".$text."</pre>";
 }
