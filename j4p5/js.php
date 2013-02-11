@@ -7,7 +7,7 @@ use Walterra\J4p5Bundle\j4p5\jsc;
 
 /* 
   J4P5: EcmaScript interpreter for php
-  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+  Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
   (also known as JavaScript over PHP5)
   
   This is a true EcmaScript/JavaScript interpreter, as defined by Ecma-262 3d edition.
@@ -131,6 +131,12 @@ class ".$jsClass." {
             }
             $obj->put($js, $v);
         }
+    }
+    
+    static public function get_classname_without_namespace($class) {
+        $classNameParts = explode("\\", get_class($class));
+        $className = end($classNameParts);
+        return $className;
     }
 }
 

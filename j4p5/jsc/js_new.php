@@ -3,12 +3,13 @@
 namespace Walterra\J4p5Bundle\j4p5\jsc;
 
 use Walterra\J4p5Bundle\j4p5\jsc\js_construct;
+use Walterra\J4p5Bundle\j4p5\js;
 
 class js_new extends js_construct {
     function __construct($expr) {
         list($this->expr) = func_get_args();
         #-- if direct child is a js_call object, vampirize it.
-        if (get_class($this->expr)=="js_call") {
+        if (js:get_classname_without_namespace($this->expr)=="js_call") {
             $this->args = $this->expr->args;
             $this->expr = $this->expr->expr;
         } else {

@@ -4,6 +4,7 @@ namespace Walterra\J4p5Bundle\j4p5;
 
 use Exception;
 use Iterator;
+use Walterra\J4p5Bundle\j4p5\js;
 
 // javascript runtime.
 /* weird bugs I blame on the php engine:
@@ -54,7 +55,7 @@ static $proto_typeerror;
 static $proto_urierror;
 
 static function start_once() {
-  if (get_class(jsrt::$global)=="js_object") return;
+  if (js::get_classname_without_namespace(jsrt::$global)=="js_object") return;
   jsrt::start();
 }
 
@@ -893,7 +894,7 @@ class js_val {
       case js_val::NUMBER: return $this->value;
       case js_val::STRING: return var_export($this->value, 1);
       case js_val::OBJECT:
-        $s = "class: ".get_class($this)."<br>";
+        $s = "class: ".js::get_classname_without_namespace($this)."<br>";
         foreach ($this->slots as $key=>$value) {
           $s .= "$key => ".$value->value."<br>";
         }
@@ -1204,12 +1205,12 @@ class js_function extends js_object {
   }
   static public function func_toString() {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_function") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_function") throw new js_exception(new js_typeerror());
     return $obj->defaultValue();
   }
   static public function func_apply($thisArg, $argArray) {
     $obj = jsrt::$this();
-    if (get_class($obj)!="js_function") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_function") throw new js_exception(new js_typeerror());
     if ($thisArg==jsrt::$null or $thisArg==jsrt::$undefined) {
       $thisArg = jsrt::$global;
     } else {
@@ -1229,7 +1230,7 @@ class js_function extends js_object {
   }
   static public function func_call($thisArg) {
     $obj = jsrt::$this();
-    if (get_class($obj)!="js_function") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_function") throw new js_exception(new js_typeerror());
     $args = func_get_args();
     array_shift($args);
     if ($thisArg==jsrt::$null or $thisArg==jsrt::$undefined) {
@@ -1319,7 +1320,7 @@ class js_array extends js_object {
   }
   static public function toString() {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_array") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_array") throw new js_exception(new js_typeerror());
     return $obj->defaultValue();
   }
   static public function toLocaleString() {
@@ -1332,7 +1333,7 @@ class js_array extends js_object {
     array_unshift($args, jsrt::$this());
     while (count($args)>0) {
       $obj = array_shift($args);
-      if (get_class($obj)!="js_array") {
+      if (js::get_classname_without_namespace($obj)!="js_array") {
         $array->_push($obj);
       } else {
         $len = $obj->get("length")->value;
@@ -1609,7 +1610,7 @@ class js_string extends js_object {
   }
   static public function toString() {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_string") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_string") throw new js_exception(new js_typeerror());
     return $obj->value;
   }
   static public function charAt($pos) {
@@ -1655,7 +1656,7 @@ class js_string extends js_object {
   }
   static public function match($regexp) {
     $obj = jsrt::this()->toStr();
-    if (get_class($regexp)!="js_regexp") {
+    if (js::get_classname_without_namespace($regexp)!="js_regexp") {
       $regexp = new js_regexp($regexp->toStr()->value);
     }
     if ($regexp->get("global")==jsrt::false) {
@@ -1673,7 +1674,7 @@ class js_string extends js_object {
   }
   static public function search($regexp) {
     $obj = jsrt::this()->toStr();
-    if (get_class($regexp)!="js_regexp") {
+    if (js::get_classname_without_namespace($regexp)!="js_regexp") {
       $regexp = new js_regexp($regexp->toStr()->value);
     }
     // XXX finish once RegExp is there
@@ -1693,7 +1694,7 @@ class js_string extends js_object {
   static public function split($sep, $limit) {
     $obj = jsrt::this()->toStr()->value;
     $limit = ($limit==jsrt::$undefined)?0xffffffff:$limit->toUInt32()->value;
-    if (get_class($sep)=="js_regexp") {
+    if (js::get_classname_without_namespace($sep)=="js_regexp") {
       // XXX finish me once RegExp is there
       throw new js_exception(new js_error("string::split(//) not implemented"));
     }
@@ -1756,12 +1757,12 @@ class js_boolean extends js_object {
   }
   static public function toString() {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_boolean") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_boolean") throw new js_exception(new js_typeerror());
     return $obj->value->value==jsrt::$true?js_str("true"):js_str("false");
   }
   static public function valueOf() {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_boolean") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_boolean") throw new js_exception(new js_typeerror());
     return $obj->value;
   }
 
@@ -1788,7 +1789,7 @@ class js_number extends js_object {
   static public function toString() {
     list($radix) = func_get_args();
     $obj = jsrt::this();
-    if (get_class($obj)!="js_number") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_number") throw new js_exception(new js_typeerror());
     $x = $obj->toNumber()->value;
     
     if (is_nan($x)) return js_str("NaN");
@@ -1804,7 +1805,7 @@ class js_number extends js_object {
   }
   static public function valueOf() {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_number") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_number") throw new js_exception(new js_typeerror());
     return $obj->toNumber()->value;  
   }
   static public function toFixed($digits) {
@@ -1997,7 +1998,7 @@ class js_date extends js_object {
     // MSIE: Sat Jun 25 02:56:25 PDT 2005
     // let's go with RFC 2822
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     return js_str(date("r", $obj->value/1000));
   }
   static function toDateString() {
@@ -2005,14 +2006,14 @@ class js_date extends js_object {
     // MSIE: Sat Jun 25 2005
     // they agree. weird.
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     return js_str(date("D M j Y", $obj->value/1000));
   }
   static function toTimeString() {
     // Gecko: 03:13:37 GMT -0700 (Pacific Daylight Time)
     // MSIE: 03:14:00 PDT
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     return js_str(date("G:i:s T", $obj->value/1000));
   }
   static function toLocaleString() {
@@ -2020,22 +2021,22 @@ class js_date extends js_object {
     // MSIE: Saturday, June 25, 2005 03:16:21 AM
     // Us: Whatever PHP wants to do.
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     return js_str(strftime("%c", $obj->value/1000));
   }
   static function toLocaleDateString() {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     return js_str(strftime("%x", $obj->value/1000));
   }
   static function toLocaleTimeString() {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     return js_str(strftime("%X", $obj->value/1000));
   }
   static function valueOf() {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     return js_int($obj->value);
   }
   static function getTime() {
@@ -2129,14 +2130,14 @@ class js_date extends js_object {
   }
   static function setTime($time) {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     $v = $time->toNumber()->value;
     $obj->value = $v;
     return js_int($v);
   }
   static function setMilliseconds($ms) {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     $t = js_date::valueOf()->value;
     $ms = $ms->toNumber()->value;
     $v = floor($t/1000)*1000 + $ms;
@@ -2148,7 +2149,7 @@ class js_date extends js_object {
   }
   static function setSeconds($s, $ms) {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     $t = $obj->value;
     $s = $s->toNumber()->value;
     $ms = ($ms == jsrt::$undefined)?($t%1000):$ms->toNumber()->value;
@@ -2161,7 +2162,7 @@ class js_date extends js_object {
   }
   static function setMinutes($min, $sec, $ms) {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     $t = $obj->value;
     $min = $min->toNumber()->value;
     $sec = ($sec==jsrt::$undefined)?js_date::getSeconds():$sec->toNumber()->value;
@@ -2173,7 +2174,7 @@ class js_date extends js_object {
   }
   static function setUTCMinutes($min, $sec, $ms) {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     $t = $obj->value;
     $min = $min->toNumber()->value;
     $sec = ($sec==jsrt::$undefined)?js_date::getUTCSeconds():$sec->toNumber()->value;
@@ -2185,7 +2186,7 @@ class js_date extends js_object {
   }
   static function setHours($hour, $min, $sec, $ms) {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     $t = $obj->value;
     $hour = $hour->toNumber()->value;
     $min = ($min==jsrt::$undefined)?js_date::getMinutes():$min->toNumber()->value;
@@ -2198,7 +2199,7 @@ class js_date extends js_object {
   }
   static function setUTCHours($hour, $min, $sec, $ms) {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     $t = $obj->value;
     $hour = $hour->toNumber()->value;
     $min = ($min==jsrt::$undefined)?js_date::getUTCMinutes():$min->toNumber()->value;
@@ -2211,7 +2212,7 @@ class js_date extends js_object {
   }
   static function setDate($date) {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     $t = $obj->value;
     $date = $date->toNumber()->value;
     $v = mktime(js_date::getHours(), js_date::getMinutes(), js_date::getSeconds(),
@@ -2221,7 +2222,7 @@ class js_date extends js_object {
   }
   static function setUTCDate($date) {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     $t = $obj->value;
     $date = $date->toNumber()->value;
     $v = gmmktime(js_date::getUTCHours(), js_date::getUTCMinutes(), js_date::getUTCSeconds(),
@@ -2231,7 +2232,7 @@ class js_date extends js_object {
   }
   static function setMonth($month, $date) {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     $t = $obj->value;
     $month = $month->toNumber()->value;
     $date=($date==jsrt::$undefined)?js_date::getDate():$date->toNumber()->value;
@@ -2242,7 +2243,7 @@ class js_date extends js_object {
   }
   static function setUTCMonth($month, $date) {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     $t = $obj->value;
     $month = $month->toNumber()->value;
     $date=($date==jsrt::$undefined)?js_date::getUTCDate():$date->toNumber()->value;
@@ -2253,7 +2254,7 @@ class js_date extends js_object {
   }
   static function setFullYear($year, $month, $date) {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     $t = $obj->value;
     $year = $year->toNumber()->value;
     $month = ($month==jsrt::$undefined)?js_date::getMonth():$month->toNumber()->value;
@@ -2265,7 +2266,7 @@ class js_date extends js_object {
   }
   static function setUTCFullYear($year, $month, $date) {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     $t = $obj->value;
     $year = $year->toNumber()->value;
     $month = ($month==jsrt::$undefined)?js_date::getUTCMonth():$month->toNumber()->value;
@@ -2277,7 +2278,7 @@ class js_date extends js_object {
   }
   static function toUTCString() {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_date") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_date") throw new js_exception(new js_typeerror());
     $t = $obj->value;
     return js_str(gmstrftime("%c", $t/1000));
   }
@@ -2301,10 +2302,10 @@ class js_regexp extends js_object {
   ////////////////////////
   static function object($value) {
     list ($pattern, $flags) = func_get_args();
-    if (!js_function::isConstructor() and get_class($pattern)=="js_regexp" and $flags==jsrt::$undefined) {
+    if (!js_function::isConstructor() and js::get_classname_without_namespace($pattern)=="js_regexp" and $flags==jsrt::$undefined) {
       return $pattern;
     }
-    if (get_class($pattern)=="js_regexp") {
+    if (js::get_classname_without_namespace($pattern)=="js_regexp") {
       if ($flags!=jsrt::$undefined) {
         throw new js_exception(new js_typeerror());
       }
@@ -2318,7 +2319,7 @@ class js_regexp extends js_object {
   }
   static function exec($str) {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_regexp") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_regexp") throw new js_exception(new js_typeerror());
     $s = $str->toStr()->value;
     $len = strlen($s);
     $lastIndex = $obj->get("lastIndex")->toInteger()->value;
@@ -2352,7 +2353,7 @@ class js_regexp extends js_object {
   }
   static function toString() {
     $obj = jsrt::this();
-    if (get_class($obj)!="js_regexp") throw new js_exception(new js_typeerror());
+    if (js::get_classname_without_namespace($obj)!="js_regexp") throw new js_exception(new js_typeerror());
     $s = "/".str_replace(array("/","\\"),array("\/","\\\\"),$obj->pattern)."/";
     if ($obj->get("global")==jsrt::$true) $s.="g";
     if ($obj->get("ignoreCase")==jsrt::$true) $s.="i";
@@ -2376,7 +2377,7 @@ class js_error extends js_object {
   static function toString() {
     $obj = jsrt::this();
     if (!($obj instanceof js_error)) throw new js_exception(new js_typeeror());
-    return js_str(get_class($obj).": ".$obj->get("message")->toStr()->value);
+    return js_str(js::get_classname_without_namespace($obj).": ".$obj->get("message")->toStr()->value);
   }
 }
 class js_evalerror extends js_error {
@@ -2526,7 +2527,7 @@ function js_obj($v) {
   return $v->toObject();
 }
 function js_thrown($v) {
-  return (get_class($v)=="js_exception" and $v->type==js_exception::EXCEPTION);
+  return (js::get_classname_without_namespace($v)=="js_exception" and $v->type==js_exception::EXCEPTION);
 }
 
 function php_int($o) {

@@ -3,6 +3,7 @@
 namespace Walterra\J4p5Bundle\j4p5\jsc;
 
 use Walterra\J4p5Bundle\j4p5\jsc\js_construct;
+use Walterra\J4p5Bundle\j4p5\js;
 
 class js_print extends js_construct {
     function __construct() {
@@ -14,7 +15,7 @@ class js_print extends js_construct {
         $first=true;
         foreach ($this->args as $arg) {
             if ($first) {$first^=true;} else {$o.=",";}
-            $o.="(".(get_class($arg)?$arg->emit(1):$arg).")";
+            $o.="(".(js:get_classname_without_namespace($arg)?$arg->emit(1):$arg).")";
         }
         $o.= ");\n";
         return $o;

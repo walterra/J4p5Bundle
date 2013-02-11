@@ -5,6 +5,7 @@ namespace Walterra\J4p5Bundle\j4p5\jsc;
 use Walterra\J4p5Bundle\j4p5\jsc\js_construct;
 use Walterra\J4p5Bundle\j4p5\jsc;
 use Walterra\J4p5Bundle\j4p5\jsc\js_source;
+use Walterra\J4p5Bundle\j4p5\js;
 
 class js_for_in extends js_construct {
     function __construct($one, $list, $statement) {
@@ -14,7 +15,7 @@ class js_for_in extends js_construct {
         $key=jsc::gensym("fv");
         js_source::$nest++;
         $o ="foreach (".$this->list->emit(1)." as \$$key) {\n";
-        if (get_class($this->one)=="js_var") {
+        if (js::get_classname_without_namespace($this->one)=="js_var") {
             $v = $this->one->emit_for();
         } else {
             $v = $this->one->emit();

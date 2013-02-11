@@ -3,6 +3,7 @@
 namespace Walterra\J4p5Bundle\j4p5\jsc;
 
 use Walterra\J4p5Bundle\j4p5\jsc\js_construct;
+use Walterra\J4p5Bundle\j4p5\js;
 
 class js_literal_array extends js_construct {
     function __construct($arr) {
@@ -15,7 +16,7 @@ class js_literal_array extends js_construct {
                 $a[$i] = $this->arr[$i]->emit(1);
             }
         }
-        if (count($this->arr)==1 and get_class($this->arr[0])=="js_literal_null") {
+        if (count($this->arr)==1 and js::get_classname_without_namespace($this->arr[0])=="js_literal_null") {
             $a = array();
         }
 
