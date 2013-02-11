@@ -2,9 +2,10 @@
 
 namespace Walterra\J4p5Bundle\j4p5;
 
-require_once(dirname(__FILE__)."/parse/parser.so.php");
-
 use Walterra\J4p5Bundle\j4p5\jsly;
+use Walterra\J4p5Bundle\j4p5\parse\parser;
+use Walterra\J4p5Bundle\j4p5\parse\preg_scanner;
+use Walterra\J4p5Bundle\j4p5\parse\easy_parser;
 
 /*
 known brokenness:
