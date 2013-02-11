@@ -34,7 +34,7 @@ class js_source extends js_construct {
         js_source::$that->functions[] = $function;
     }
 
-    function addFunctionDefinition($function) {
+    static public function addFunctionDefinition($function) {
         js_program::$source->funcdef[] = $function;
     }
 
@@ -68,7 +68,7 @@ class js_source extends js_construct {
             if ($fd!='') $fd = "/* function declarations */\n".$fd;
         }
         # that's all folks
-        return $fd.$f.$v.$s;
+        return $f.$v.$s."\n}".$fd;
     }
 }
 

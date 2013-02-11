@@ -5,6 +5,7 @@ namespace Walterra\J4p5Bundle\j4p5;
 use Exception;
 use Iterator;
 use Walterra\J4p5Bundle\j4p5\js;
+use Walterra\J4p5Bundle\j4p5\jsrt;
 
 // javascript runtime.
 /* weird bugs I blame on the php engine:
@@ -1170,7 +1171,17 @@ class js_function extends js_object {
       // this way, we still get to see other kind of errors. unless they're warnings. sigh.
       // note: this call_user_func_array() is responsible for crashes if exceptions are thrown through it.
       //$saved = error_reporting(4093);
-      $v = call_user_func_array("\Walterra\J4p5Bundle\j4p5\\".$this->phpname[0]."::".$this->phpname[1], $args);
+      if(!is_array($this->phpname))
+      {
+          $out = Output::getInstance(); // helper to get namespace/classname of dynamic php
+          $this->phpname = array(
+            $out->getClassName(),
+            $this->phpname
+          );
+      }
+      if($this->phpname[0]=='jsrt') $this->phpname[0] = "Walterra\J4p5Bundle\j4p5\jsrt";
+      
+      $v = call_user_func_array($this->phpname, $args);
       //error_reporting($saved);
     } catch (Exception $e) {
       $thrown = $e;

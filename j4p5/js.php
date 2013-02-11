@@ -57,10 +57,12 @@ class js {
         if ($id==NULL) $id = md5($src);
         $path = JS_CACHE_DIR."/".$id.".php";
         $jsClass = "js_".$id;
+        $namespace = "Walterra\J4p5Bundle\j4p5\\ns_".$id;
+        $out = Output::getInstance(); // helper to save namespace/classname
+        $out->setClassName($namespace."\\".$jsClass);
         
         if (!file_exists($path)) {
-          #-- ok. we need to compile the darn thing.
-            require_once(dirname(__FILE__)."/jsc.php");
+            #-- ok. we need to compile the darn thing.
 
             if ($mode==JS_INLINE) $src = "?>".$src;
             $t1 = microtime(1);
@@ -68,6 +70,9 @@ class js {
             $t2 = microtime(2);
             echo "Compilation done in ".($t2-$t1). " seconds<hr>";
             file_put_contents($path, "<?php\n
+            
+namespace ".$namespace.";
+
 use \Walterra\J4p5Bundle\j4p5\js;
 use \Walterra\J4p5Bundle\j4p5\jsrt;
 use \Walterra\J4p5Bundle\j4p5\jss;
@@ -75,14 +80,12 @@ use \Walterra\J4p5Bundle\j4p5\jss;
 class ".$jsClass." {
     static public function run(){
         ".$php."\n
-    }
-}
 ?>");
         }
         #-- then we run it.
         #echo highlight_linenum($path);
         require_once $path;
-        call_user_func(array($jsClass, "run")); 
+        call_user_func(array("\\".$namespace."\\".$jsClass, "run")); 
     }
 
     #-- normally called by generated code. Your code doesn't need to call it.
@@ -160,4 +163,41 @@ function highlight_linenum($path)
     }
 
     return "<pre style='border:1px dotted #aaa;'>".$text."</pre>";
+}
+
+class Output {
+  private static $className = '';
+  private static $key = '';
+  private static $value = '';
+  public static function getInstance() 
+  {
+      static $instance;
+      if ($instance === null)
+          $instance = new Output();
+      return $instance;
+  }
+  private function __construct() { }
+
+  public function setClassName($name)
+  {
+      self::$className = $name;
+  }
+  
+  public function getClassName()
+  {
+      return self::$className;
+  }
+  public function set($key, $value)
+  {
+      self::$key = $key;
+      self::$value = $value;
+  }
+
+  public function get($key, $value)
+  {
+      return array(
+        "key" => self::$key,
+        "value" => self::$value
+      );
+  }
 }

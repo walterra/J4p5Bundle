@@ -36,7 +36,7 @@ abstract class parser {
         $token = $lex->next();
         while (true) {
             $step = $this->get_step($tos->state, $token->type);
-            echo implode(':', $step)."<br>";
+            // echo implode(':', $step)."<br>";
             switch($step[0]) {
                 case 'go':
                 $tos->shift($token->text);
@@ -67,7 +67,6 @@ abstract class parser {
                 break;
 
                 case 'error':
-                var_dump(array($tos->state, $token->type));
                 $stack[] = $tos;
                 $strategy->stuck($token, $lex, $stack);
                 break;

@@ -22,12 +22,12 @@ known brokenness:
 
 
 class jsc {
-    function gensym($prefix='') {
+    static public function gensym($prefix='') {
         static $uniq = 0;
         return $prefix.++$uniq;
     }
 
-    static function compile($codestr) {
+    static public function compile($codestr) {
         #-- ideally, we want to avoid generating our parser table at every compilation.
         #-- 2 layers of caching: using an external file, and using static vars.
         global $def_fun_track;

@@ -200,7 +200,7 @@ Class jsly {
      return new js_print(new js_literal_string($tokens[1],0)); 
     }
     public static function __lambda_41 ($tokens) {
-        return new js_print(js_plus(new js_literal_string($tokens[1],0), $tokens[3]));
+        return new js_print(new js_plus(new js_literal_string($tokens[1],0), $tokens[3]));
     }
     public static function __lambda_42 ($tokens) {
     return new js_nop();
@@ -466,7 +466,7 @@ Class jsly {
     return new js_ursh($tokens[0],$tokens[2]);
     }
     public static function __lambda_125 ($tokens) {
-    return 	$tokens[0];
+    return $tokens[0];
     }
     public static function __lambda_126 ($tokens) {
     return new js_lt($tokens[0],$tokens[2]);
@@ -565,7 +565,7 @@ Class jsly {
     ),
     5 => 
     array (
-      0 => '((?)\\bpublic static function\\b)',
+      0 => '((?)\\bfunction\\b)',
       1 => 'T_FUNCTION',
       2 => 0,
       3 => '',

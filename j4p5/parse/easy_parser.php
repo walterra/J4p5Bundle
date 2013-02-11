@@ -12,14 +12,16 @@ class easy_parser extends parser {
         $this->strategy = ($strategy ? $strategy : new default_parser_strategy());
         /*
         foreach($this->action as $k => $body) {
-        $this->call[$k] = create_function( '$tokens', preg_replace('/{(\d+)}/', '$tokens[\\1]', $body));
+            $this->call[$k] = create_function( '$tokens', preg_replace('/{(\d+)}/', '$tokens[\\1]', $body));
         }
         */
     }
+    
     function reduce($action, $tokens) {
         $call = $this->call[$action];
         return jsly::$call($tokens);
     }
+    
     function parse($symbol, $lex, $strategy = null) {
         return parent::parse($symbol, $lex, $this->strategy);
     }
