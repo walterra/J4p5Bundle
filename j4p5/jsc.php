@@ -54,8 +54,7 @@ class jsc {
             $php = $program->emit();
         } catch (\Exception $e) {
             #-- Compilation error. should be pretty rare. usually the parser will barf long before this.
-            var_dump($e);
-            // echo "Compilation Error: ".$e->value->msg."<hr>";
+            echo "Compilation Error: ".$e->getMessage()."<hr>";
         }
         return $php;
     }

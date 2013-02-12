@@ -11,7 +11,7 @@ class js_do extends js_construct {
     }
     function emit($w=0) {
         js_source::$nest++;
-        $o = "do ".rtrim($this->statement->emit(1))." while (js_bool(".$this->expr->emit(1)."));\n";
+        $o = "do ".rtrim($this->statement->emit(1))." while (jss::js_bool(".$this->expr->emit(1)."));\n";
         js_source::$nest--;
         return $o;
     }

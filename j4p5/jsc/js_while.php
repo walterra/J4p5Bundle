@@ -12,7 +12,7 @@ class js_while extends js_construct {
     }
     function emit($w=0) {
         js_source::$nest++;
-        $o = "while (js_bool(".$this->expr->emit(1).")) ".$this->statement->emit(1)."\n";
+        $o = "while (jss::js_bool(".$this->expr->emit(1).")) ".$this->statement->emit(1)."\n";
         js_source::$nest--;
         return $o;
     }

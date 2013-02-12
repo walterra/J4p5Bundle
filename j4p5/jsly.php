@@ -200,7 +200,7 @@ Class jsly {
      return new js_print(new js_literal_string($tokens[1],0)); 
     }
     public static function __lambda_41 ($tokens) {
-        return new js_print(new js_plus(new js_literal_string($tokens[1],0), $tokens[3]));
+        return new js_print(js_plus(new js_literal_string($tokens[1],0), $tokens[3]));
     }
     public static function __lambda_42 ($tokens) {
     return new js_nop();

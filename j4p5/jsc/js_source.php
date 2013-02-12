@@ -30,7 +30,7 @@ class js_source extends js_construct {
         js_source::$that->vars[] = $var;
     }
 
-    function addFunctionExpression($function) {
+    static public function addFunctionExpression($function) {
         js_source::$that->functions[] = $function;
     }
 
@@ -54,7 +54,7 @@ class js_source extends js_construct {
         $v = js_var::really_emit($this->vars);
         #dump function expressions.
         $f = '';
-        foreach ($this->functions as $function) {   
+        foreach ($this->functions as $function) {
             $f .= $function->function_emit();
         }
         if ($f!='') $f = "/* function mapping */\n".$f;
@@ -66,9 +66,11 @@ class js_source extends js_construct {
                 $fd .= $function->toplevel_emit();
             }
             if ($fd!='') $fd = "/* function declarations */\n".$fd;
+            # that's all folks
+            return "    static public function run(){\n            js::init();\n        ".$f.$v.$s."\n}\n\n".$fd;
         }
         # that's all folks
-        return $f.$v.$s."\n}".$fd;
+        return $fd.$f.$v.$s;
     }
 }
 

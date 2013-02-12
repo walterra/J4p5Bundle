@@ -12,7 +12,7 @@ class js_for extends js_construct {
     function emit($w=0) {
         $o = $this->init?$this->init->emit(1):'';
         js_source::$nest++;
-        $o.= "for (;".($this->cond?"js_bool(".$this->cond->emit(1).")":'');
+        $o.= "for (;".($this->cond?"jss::js_bool(".$this->cond->emit(1).")":'');
         $o.= ";".($this->incr?$this->incr->emit(1):'').") {\n";
         $o.=$this->statement->emit(1);
         $o.="\n}\n";

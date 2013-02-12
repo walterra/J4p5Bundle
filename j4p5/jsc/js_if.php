@@ -11,7 +11,7 @@ class js_if extends js_construct {
         $this->elseblock = $elseblock;
     }
     function emit($w=0) {
-        $o = "if (js_bool(".$this->cond->emit(1).")) ".$this->ifblock->emit(1);
+        $o = "if (jss::js_bool(".$this->cond->emit(1).")) ".$this->ifblock->emit(1);
         if ($this->elseblock) {
             $o = rtrim($o) . " else ".$this->elseblock->emit(1)."\n";
         }

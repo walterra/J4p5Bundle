@@ -78,8 +78,9 @@ use \Walterra\J4p5Bundle\j4p5\jsrt;
 use \Walterra\J4p5Bundle\j4p5\jss;
 
 class ".$jsClass." {
-    static public function run(){
-        ".$php."\n
+    ".$php."
+}
+
 ?>");
         }
         #-- then we run it.

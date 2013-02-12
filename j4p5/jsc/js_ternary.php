@@ -12,7 +12,7 @@ class js_ternary extends js_construct {
     }
     function emit($w=0) {
         #-- can't use a helper function to maintain the short-circuit thing.
-        return "(js_bool(".$this->args[0]->emit(1).")?(".$this->args[1]->emit(1)."):(".$this->args[2]->emit(1)."))";
+        return "(jss::js_bool(".$this->args[0]->emit(1).")?(".$this->args[1]->emit(1)."):(".$this->args[2]->emit(1)."))";
     }
 }
 

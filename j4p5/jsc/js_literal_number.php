@@ -9,7 +9,7 @@ class js_literal_number extends js_construct {
         $this->v = $v;
     }
     function emit($w=0) {
-        return "js_int(".$this->v.")";
+        return "jss::js_int(".$this->v.")";
     }
 }
 

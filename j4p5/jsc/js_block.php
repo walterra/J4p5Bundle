@@ -11,7 +11,6 @@ class js_block extends js_construct {
     function emit($w=0) {
         $o = "{\n";
         foreach ($this->statements as $statement) {
-            echo $statement->emit(1)."\n\n";
             $o.= "  ".trim(str_replace("\n", "\n  ", $statement->emit(1)))."\n";
         }
         $o.= "}\n";

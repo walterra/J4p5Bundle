@@ -13,9 +13,9 @@ class js_function_definition extends js_construct {
         $this->phpid = jsc::gensym("jsrt_uf");
     }
     function toplevel_emit() {
-        $o  = "static public function ".$this->phpid."() {\n";
-        $o .= "  ".trim(str_replace("\n", "\n  ", $this->body));
-        $o .= "\n}\n";
+        $o  = "    static public function ".$this->phpid."() {\n";
+        $o .= "        ".trim(str_replace("\n", "\n        ", $this->body));
+        $o .= "\n    }\n\n";
         return $o;  
     }
     function function_emit() {

@@ -5,6 +5,7 @@ namespace Walterra\J4p5Bundle\j4p5\parse;
 use \Walterra\J4p5Bundle\j4p5\parse\token_source;
 use \Walterra\J4p5Bundle\j4p5\parse\stream;
 use \Walterra\J4p5Bundle\j4p5\parse\token;
+use \Walterra\J4p5Bundle\j4p5\jsly;
 
 class preg_scanner extends token_source {
     function report_instant_description() {
@@ -46,7 +47,7 @@ class preg_scanner extends token_source {
             $pattern = $this->pattern[$this->state][$index];
             $type = $pattern[1]; //->type;
             $action = $pattern[3]; //->action;
-            if ($action) $action($type, $text, $match, $this->state, $this->context);
+            if ($action) jsly::$action($type, $text, $match, $this->state, $this->context);
             if ($pattern[2]) return $this->next();
             $stop = $this->stream->pos();
             return new token($type, $text, $start, $stop);
