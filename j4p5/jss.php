@@ -4,6 +4,7 @@ namespace Walterra\J4p5Bundle\j4p5;
 
 use Exception;
 use Iterator;
+use Walterra\J4p5Bundle\j4p5\jsrt\js_val;
 
 
 //////////////////////////////////////////////

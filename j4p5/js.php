@@ -4,6 +4,8 @@ namespace Walterra\J4p5Bundle\j4p5;
 
 use Walterra\J4p5Bundle\j4p5\jsrt;
 use Walterra\J4p5Bundle\j4p5\jsc;
+use Walterra\J4p5Bundle\j4p5\output;
+use Walterra\J4p5Bundle\j4p5\jsrt\js_object;
 
 /* 
   J4P5: EcmaScript interpreter for php
@@ -58,7 +60,7 @@ class js {
         $path = JS_CACHE_DIR."/".$id.".php";
         $jsClass = "js_".$id;
         $namespace = "Walterra\J4p5Bundle\j4p5\\ns_".$id;
-        $out = Output::getInstance(); // helper to save namespace/classname
+        $out = output::getInstance(); // helper to save namespace/classname
         $out->setClassName($namespace."\\".$jsClass);
         
         if (!file_exists($path)) {
@@ -68,7 +70,7 @@ class js {
             $t1 = microtime(1);
             $php = jsc::compile($src);
             $t2 = microtime(2);
-            echo "Compilation done in ".($t2-$t1). " seconds<hr>";
+            # echo "Compilation done in ".($t2-$t1). " seconds<hr>";
             file_put_contents($path, "<?php\n
             
 namespace ".$namespace.";
@@ -142,6 +144,11 @@ class ".$jsClass." {
         $className = end($classNameParts);
         return $className;
     }
+    
+    static public function js_output($key, $value){
+        $out = output::getInstance(); // get class instance
+        $out->set($key, $value);
+    }
 }
 
 /**
@@ -166,39 +173,3 @@ function highlight_linenum($path)
     return "<pre style='border:1px dotted #aaa;'>".$text."</pre>";
 }
 
-class Output {
-  private static $className = '';
-  private static $key = '';
-  private static $value = '';
-  public static function getInstance() 
-  {
-      static $instance;
-      if ($instance === null)
-          $instance = new Output();
-      return $instance;
-  }
-  private function __construct() { }
-
-  public function setClassName($name)
-  {
-      self::$className = $name;
-  }
-  
-  public function getClassName()
-  {
-      return self::$className;
-  }
-  public function set($key, $value)
-  {
-      self::$key = $key;
-      self::$value = $value;
-  }
-
-  public function get($key, $value)
-  {
-      return array(
-        "key" => self::$key,
-        "value" => self::$value
-      );
-  }
-}
