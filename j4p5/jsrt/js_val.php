@@ -2,7 +2,10 @@
 
 namespace Walterra\J4p5Bundle\j4p5\jsrt;
 
+use Walterra\J4p5Bundle\j4p5\js;
 use Walterra\J4p5Bundle\j4p5\jsrt;
+use Walterra\J4p5Bundle\j4p5\jsrt\js_exception;
+use Walterra\J4p5Bundle\j4p5\jsrt\js_typeerror;
 
 /* a bit heavy for every value. optimize later. XXX */
 class js_val {

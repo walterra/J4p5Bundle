@@ -4,8 +4,8 @@ namespace Walterra\J4p5Bundle\j4p5;
 
 class output {
   private static $className = '';
-  private static $key = '';
-  private static $value = '';
+  private static $map = array();
+
   public static function getInstance() 
   {
       static $instance;
@@ -24,18 +24,28 @@ class output {
   {
       return self::$className;
   }
+  
   public function set($key, $value)
   {
-      self::$key = $key;
-      self::$value = $value;
+      array_push(self::$map, array(
+        "key" => $key,
+        "value" => $value
+      ));
   }
 
   public function get()
   {
-      return array(
-        "key" => self::$key,
-        "value" => self::$value
-      );
+      return array_pop(self::$map);
+  }
+  
+  public function getAll()
+  {
+      return self::$map;
+  }
+  
+  public function resetMap()
+  {
+      self::$map = array();
   }
 }
 

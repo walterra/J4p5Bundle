@@ -2,6 +2,8 @@
 
 namespace Walterra\J4p5Bundle\j4p5\jsrt;
 
+use Walterra\J4p5Bundle\j4p5\jsrt\js_val;
+
 class js_ref {
     public $type;
     public $base;

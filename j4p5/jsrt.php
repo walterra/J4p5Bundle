@@ -475,8 +475,8 @@ class jsrt {
         } else {
             $base = $prop->propName;
         }
-        //echo "Computing ".get_class($obj->toObject())."->".$base."<br>";
-        //jsrt::debug($obj);
+        // echo "Computing ".get_class($obj->toObject())."->".$base."<br>";
+        // jsrt::debug($obj);
         return new js_ref($obj->toObject(), $base);
     }
 
