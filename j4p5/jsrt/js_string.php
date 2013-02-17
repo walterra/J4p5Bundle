@@ -2,9 +2,11 @@
 
 namespace Walterra\J4p5Bundle\j4p5\jsrt;
 
+use Walterra\J4p5Bundle\j4p5\js;
 use Walterra\J4p5Bundle\j4p5\jss;
 use Walterra\J4p5Bundle\j4p5\jsrt;
 use Walterra\J4p5Bundle\j4p5\jsrt\js_object;
+use Walterra\J4p5Bundle\j4p5\jsrt\js_array;
 
 class js_string extends js_object {
     function __construct($value=NULL) {
@@ -134,7 +136,7 @@ class js_string extends js_object {
         }
         $sep = $sep->toStr()->value;
         $array = explode($sep, $obj);
-        return js_array(count($array), $array);
+        return new js_array(count($array), $array);
     }
     static public function substr($start, $length) {
         $obj = jsrt::this()->toStr()->value;

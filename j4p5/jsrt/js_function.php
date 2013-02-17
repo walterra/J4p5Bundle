@@ -105,8 +105,8 @@ class js_function extends js_object {
                 }
                 if($this->phpname[0]=='jsrt') $this->phpname[0] = "Walterra\J4p5Bundle\j4p5\jsrt";
                 if($this->phpname[0]=='js_object') $this->phpname[0] = "Walterra\J4p5Bundle\j4p5\jsrt\js_object";
-                if($this->phpname[0]=='js_math') $this->phpname[0] = "Walterra\J4p5Bundle\j4p5\js_math";
-                if($this->phpname[0]=='js_string') $this->phpname[0] = "Walterra\J4p5Bundle\j4p5\js_string";
+                if($this->phpname[0]=='js_math') $this->phpname[0] = "Walterra\J4p5Bundle\j4p5\jsrt\js_math";
+                if($this->phpname[0]=='js_string') $this->phpname[0] = "Walterra\J4p5Bundle\j4p5\jsrt\js_string";
                 // this is sort of a hacky function we define to access data after the js was executed
                 if($this->phpname[1]=='js_output') $this->phpname[0] = "Walterra\J4p5Bundle\j4p5\js";
 

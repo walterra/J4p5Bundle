@@ -48,7 +48,7 @@ class js_array extends js_object {
             $this->length = $value;
         } else {
             if (is_numeric($name)) {
-                if ($name-0>=$this->length->value) {
+                if ($name-0>=$this->length) {
                     $this->length = jss::js_int($name+1);
                 }
             }
